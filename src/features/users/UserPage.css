@@ -1,0 +1,29 @@
+.profile__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile__container > img {
+    max-width: 360px;
+    max-height: 360px;
+}
+
+.profile__container > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+}
+.profile__container > div > p {
+    margin: 5px 0;
+}
+
+.profile__container > div > div {
+    margin-bottom: 5px;
+}
+.profile__container > div > button {
+    font-size: 16px;
+    padding: 5px;
+    margin-top: 10px;
+}

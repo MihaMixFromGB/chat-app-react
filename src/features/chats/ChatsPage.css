@@ -1,0 +1,25 @@
+.chats__container {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-gap: 10px;
+}
+.chatNavbar {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.chatNavbar__toolbar {
+    display: flex;
+    margin-bottom: 10px;
+}
+.chatNavbar__toolbar > input:first-child {
+    width: 100%;
+}
+
+.chatMessages {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    padding: 10px;
+}

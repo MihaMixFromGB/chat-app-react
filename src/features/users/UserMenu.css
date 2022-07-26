@@ -1,0 +1,44 @@
+.userMenu {
+    position: relative;
+}
+
+.profileImg {
+    width: 50px;
+    height: 50px;
+    /* background-color: white; */
+    background-image: url(../../../public/profile.png);
+    background-size: cover;
+    border-radius: 25px;
+}
+
+.userMenu > #profileImg {
+    display: none;
+}
+.userMenu > #profileImg:checked ~ .userMenu__box {
+    display: block;
+}
+.userMenu > #profileImg:not(:checked) ~ .userMenu__box {
+    display: none;
+}
+
+.userMenu__box {
+    position: absolute;
+    z-index: 1;
+    left: -17px;
+    top: 55px;
+    background-color: #fff;
+    border: 1px solid grey;
+    border-radius: 10px;
+    padding: 10px;
+}
+.userMenu__box > nav > ul > li {
+    list-style-type: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.userMenu__box > nav > ul > li:not(:last-child) {
+    margin-bottom: 5px;
+}
+.userMenu__box > nav > ul > li > a {
+    text-decoration: none;
+}

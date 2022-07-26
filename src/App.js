@@ -1,24 +1,58 @@
-import logo from './logo.svg';
-import './App.css';
+import { useSelector } from "react-redux";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate
+} from "react-router-dom";
+
+import { Layout } from "./app/Layout";
+import { AppHeader } from "./app/AppHeader";
+import { PublicRoute, PrivateRoute } from "./app/route";
+import { ChatsPage } from "./features/chats/";
+import {
+  selectAuthStatus,
+  RegisterPage,
+  UserPage
+} from "./features/users";
 
 function App() {
+  const isAuth = useSelector((state) => selectAuthStatus(state));
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Layout appHeader={<AppHeader isAuth={isAuth} />} />}>
+          <Route path="chats" element={
+            <PrivateRoute isAuth={isAuth} to="/signin">
+              <ChatsPage />
+            </PrivateRoute>
+          } >
+            <Route path=":chatId" element={
+              <PrivateRoute isAuth={isAuth} to="/signin">
+                <ChatsPage />
+              </PrivateRoute>
+            } />
+          </Route>
+          <Route path="users/:userId" element={
+            <PrivateRoute isAuth={isAuth} to="/signin">
+              <UserPage />
+            </PrivateRoute>
+          } />
+          <Route path="signin" element={
+            <PublicRoute isAuth={isAuth} to="/chats">
+              <RegisterPage />
+            </PublicRoute>
+          } />
+          <Route path="signup" element={
+            <PublicRoute isAuth={isAuth} to="/chats">
+              <RegisterPage isSignUp={true} />
+            </PublicRoute>
+          } />
+          <Route path="*" element={<Navigate replace to="/" />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 

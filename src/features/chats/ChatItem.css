@@ -1,0 +1,14 @@
+.chatItem {
+    display: flex;
+    align-items: center;
+}
+.chatItem > a {
+    width: 100%;
+    text-decoration: none;
+}
+.chatItem > input[type="text"] {
+    width: 100%;
+}
+.chatItem > input[type="button"]:last-child {
+    width: 20px;
+}

@@ -1,0 +1,7 @@
+.chatsList > li {
+    list-style-type: none;
+}
+
+.chatsList > li:not(:last-child) {
+    margin-bottom: 5px;
+}

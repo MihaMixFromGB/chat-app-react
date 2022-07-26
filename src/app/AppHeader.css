@@ -1,0 +1,9 @@
+.appHeader__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+.appHeader__logo > a {
+    text-decoration: none;
+}

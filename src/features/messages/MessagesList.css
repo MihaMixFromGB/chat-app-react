@@ -1,0 +1,14 @@
+.messagesList__container {
+    position: relative;
+    height: 100%;
+}
+.messagesList {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+.messagesList > li:not(:last-child) {
+    margin-bottom: 5px;
+}

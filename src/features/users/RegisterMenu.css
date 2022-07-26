@@ -1,0 +1,10 @@
+.registerMenu__container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 100%;
+}
+
+.registerMenu__container a {
+    text-decoration: none;
+}
