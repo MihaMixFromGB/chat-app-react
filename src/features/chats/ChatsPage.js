@@ -4,21 +4,17 @@ import { useParams } from "react-router-dom";
 
 import { ChatsList } from "./ChatsList";
 import { MessagesPage } from "../messages/";
-import {
-    selectAllChats,
-    selectChatsStatus,
-    getAllChats,
-    addChat
-} from "./chatsSlice";
+import { selectChats, addChat } from "./chatsSlice";
 
 import "./ChatsPage.css";
+
+const MessagesPageExcerpt = React.memo(MessagesPage);
 
 export const ChatsPage = () => {
     const [newChat, setNewChat] = useState("");
     const [isValidNewChat, setIsValidNewChat] = useState(false);
 
-    const chats = useSelector(selectAllChats);
-    const chatsStatus = useSelector(selectChatsStatus);
+    const chats = useSelector(selectChats);
 
     const { chatId } = useParams();
 
@@ -33,13 +29,7 @@ export const ChatsPage = () => {
     };
 
     useEffect(() => {
-        if (chatsStatus === "idle") {
-            dispatch(getAllChats());
-        }
-    }, [chatsStatus, dispatch]);
-
-    useEffect(() => {
-        if (newChat && !chats.find(chat => chat.title === newChat)) {
+        if (newChat && !chats.some(chat => chat.title === newChat)) {
             setIsValidNewChat(true);
         } else {
             setIsValidNewChat(false);
@@ -68,12 +58,12 @@ export const ChatsPage = () => {
                         disabled={!isValidNewChat}
                         onClick={addNewChat} />
                 </div>
-                <ChatsList chats={chats} />
+                <ChatsList />
             </div>
             <div className="chatMessages">
                 {!chatId
                     ? <span className="text_regular">Please select a chat to start messaging</span>
-                    : <MessagesPage chatId={chatId} />
+                    : <MessagesPageExcerpt chatId={chatId}/>
                 }
             </div>
         </div>

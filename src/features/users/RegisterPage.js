@@ -23,18 +23,27 @@ export const RegisterPage = ({ isSignUp }) => {
         }
     };
 
+    const onEnterPressed = (event) => {
+        if (event.key !== "Enter") {
+            return;
+        }
+        onClickBtn();
+    };
+
     return (
         <div className="registerPage__container">
             <input
                 type="email"
                 value={email}
                 placeholder="email"
-                onChange={onEmailChanged} />
+                onChange={onEmailChanged}
+                onKeyUp={onEnterPressed} />
             <input
                 type="password"
                 value={password} 
                 placeholder="password"
-                onChange={onPasswordChanged} />
+                onChange={onPasswordChanged}
+                onKeyUp={onEnterPressed} />
             <input
                 type="button"
                 value={isSignUp ? "Sign Up" : "Sign In"}

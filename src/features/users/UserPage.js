@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import classNames from "classnames";
 
 import { selectUserById, updateProfile } from "./usersSlice";
 
@@ -32,7 +31,7 @@ export const UserPage = () => {
     };
 
     return (
-        <div className={classNames("profile__container", "text_regular")}>
+        <div className="profile__container text_regular">
             <img src="/profile.png" alt="My Profile" />
             {!isVisibleEditForm
                 ?   <div>

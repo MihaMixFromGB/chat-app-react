@@ -1,15 +1,23 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import classNames from "classnames";
 
-import { updateChat, deleteChat } from "./chatsSlice";
+import {
+    selectChatById,
+    updateChat,
+    deleteChat
+} from "./chatsSlice";
 
 import "./ChatItem.css";
 
-export const ChatItem = ({ chat }) => {
+export const ChatItem = ({ chatId }) => {
+    const chat = useSelector(state => selectChatById(state, chatId));
+    const { chatId: selectedChatId } = useParams();
+
     const [isEdit, setIsEdit] = useState(false);
     const [newChatTitle, setNewChatTitle] = useState(chat.title);
-    
+
     const dispatch = useDispatch();
     
     const onClickEditBtn = () => {
@@ -37,19 +45,24 @@ export const ChatItem = ({ chat }) => {
                         type="text"
                         value={newChatTitle}
                         onChange={onNewChatTitleChanged} />
-                :   <Link className="text_regular" to={`${chat.id}`}>{chat.title}</Link>}
-                    <input
-                        type="button"
-                        value="edit"
-                        onClick={onClickEditBtn}
-                        />
-                    <input
-                        type="button"
-                        value="-"
-                        onClick={onClickDeleteBtn}
-                        />
-            {/* <button onClick={onClickEditBtn}><span className="text_regular">edit</span></button>
-            <button onClick={onClickDeleteBtn}><span className="text_regular">-</span></button> */}
+                :   <Link
+                        className={classNames(
+                            "text_regular",
+                            { "chatItem_selected": selectedChatId === chat.id }
+                        )}
+                        to={`${chat.id}`}>
+                            {chat.title}
+                    </Link>}
+            <input
+                type="button"
+                value="edit"
+                onClick={onClickEditBtn}
+                />
+            <input
+                type="button"
+                value="-"
+                onClick={onClickDeleteBtn}
+                />
         </div>
     )
 }

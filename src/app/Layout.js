@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import classNames from "classnames";
 
 import "./Layout.css";
 
@@ -15,7 +14,7 @@ export const Layout = ({ appHeader }) => {
     }, [pathname, navigate]);
 
     return (
-        <div className={classNames("appLayout", "container")}>
+        <div className="appLayout container">
             <header className="appHeader">
                 {appHeader}
             </header>

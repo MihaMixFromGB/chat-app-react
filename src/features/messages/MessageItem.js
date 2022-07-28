@@ -4,9 +4,11 @@ import { parseISO, format } from "date-fns";
 import classNames from "classnames";
 
 import "./MessageItem.css";
+import { selectMessageById } from "./messagesSlice";
 import { selectUserNicknameById, selectAuthUserId } from "../users";
 
-export const MessageItem = ({ message }) => {
+export const MessageItem = ({ messageId }) => {
+    const message = useSelector(state => selectMessageById(state, messageId));
     const nickname = useSelector(state => selectUserNicknameById(state, message.user));
     const authUserId = useSelector(state => selectAuthUserId(state));
 
@@ -17,13 +19,13 @@ export const MessageItem = ({ message }) => {
                 "message_toRight": authUserId === message.user
             }
         )}>
-            <p className={classNames("message_author", "text_light")}>
+            <p className="message_author text_light">
                 {nickname}
             </p>
-            <p className={classNames("message_text", "text_regular")}>
+            <p className="message_text text_regular">
                 {message.text}
             </p>
-            <p className={classNames("message_date", "text_light")}>
+            <p className="message_date text_light">
                 {format(parseISO(message.date), "dd-MM-yyyy HH:mm:ss")}
             </p>
         </div>

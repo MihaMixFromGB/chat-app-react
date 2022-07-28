@@ -35,6 +35,11 @@ input[type="password"] {
     padding: 3px;
 }
 
+a:hover,
+.refElement:hover {
+    opacity: 70%;
+}
+
 .appLayout {
     min-height: 100vh;
     display: grid;

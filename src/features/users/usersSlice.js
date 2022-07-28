@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+    createSlice,
+    createAsyncThunk,
+    createEntityAdapter
+} from "@reduxjs/toolkit";
 
 import {
     signInFb,
@@ -52,28 +56,18 @@ export const updateProfile = createAsyncThunk(
     }
 );
 
-const initialState = {
+const usersAdapter = createEntityAdapter();
+
+const initialState = usersAdapter.getInitialState({
     isAuth: false,
     authUserId: "",
     status: "idle",
-    error: "",
-    profiles: {}
-};
+    error: ""
+});
 
 const usersSlice = createSlice({
     name: "users",
     initialState,
-    reducers: {
-        userUpdated(state, action) {
-            const { id, firstname, lastname, nickname } = action.payload;
-            const existingUser = state.profiles[id];
-            if (existingUser) {
-                existingUser.firstname = firstname;
-                existingUser.lastname = lastname;
-                existingUser.nickname = nickname;
-            }
-        }
-    },
     extraReducers(builder) {
         builder
             // signIn
@@ -132,7 +126,7 @@ const usersSlice = createSlice({
             })
             .addCase(getAllProfiles.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                state.profiles = { ...action.payload }
+                usersAdapter.setAll(state, action.payload);
             })
             .addCase(getAllProfiles.rejected, (state, action) => {
                 state.status = "failed";
@@ -146,7 +140,13 @@ const usersSlice = createSlice({
             })
             .addCase(updateProfile.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                state.profiles[action.payload.id] = { ...action.payload }
+                // updateOne() update store
+                // but useSelector on the UserPage won't be called to update profiles' data on the page
+                // usersAdapter.updateOne(state, action.payload);
+                const existingUser = state.entities[action.payload.id];
+                if (existingUser) {
+                    existingUser.lastname = action.payload.lastname;
+                }
             })
             .addCase(updateProfile.rejected, (state, action) => {
                 state.status = "failed";
@@ -155,18 +155,18 @@ const usersSlice = createSlice({
     }
 });
 
-export const { userUpdated } = usersSlice.actions;
+export const {
+    selectAll: selectUsers,
+    selectById: selectUserById,
+    selectIds: selectUserIds
+} = usersAdapter.getSelectors(state => state.users);
 
-export const selectAllUsers = (state) => 
-    state.users.profiles;
-export const selectUserById = (state, userId) => 
-    state.users.profiles[userId];
-export const selectUserNicknameById = (state, userId) => 
-    state.users.profiles[userId].nickname;
-export const selectAuthUserId = (state) => 
-    state.users.authUserId;
 export const selectUsersStatus = (state) => 
     state.users.status;
+export const selectUserNicknameById = (state, userId) => 
+    state.users.entities[userId].nickname;
+export const selectAuthUserId = (state) => 
+    state.users.authUserId;
 export const selectAuthStatus = (state) => 
     state.users.isAuth;
 

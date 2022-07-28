@@ -1,4 +1,9 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+    createSlice,
+    createAsyncThunk,
+    createEntityAdapter,
+    // createSelector
+} from "@reduxjs/toolkit";
 import { nanoid } from "@reduxjs/toolkit";
 
 import {
@@ -11,8 +16,7 @@ export const getAllMessages = createAsyncThunk(
     "messages/getAllMessages",
     async (chatId) => {
         const messages = await getAllMessagesFb(chatId);
-        messages.sort((a, b) => a.date.localeCompare(b.date));
-        return { chatId, messages }
+        return messages;
     }
 );
 export const addMessage = createAsyncThunk(
@@ -40,36 +44,22 @@ export const deleteMessage = createAsyncThunk(
     "",
     async (chatId, messageId) => {
         await deleteMessageFb(chatId, messageId);
-        return { chatId, messageId }
+        return messageId;
     }
 );
 
-const initialState = {
+const messagesAdapter = createEntityAdapter({
+    sortComparer: (a, b) => a.date.localeCompare(b.date)
+});
+
+const initialState = messagesAdapter.getInitialState({
     status: "idle",
-    error: "",
-    messages: {}
-};
+    error: ""
+});
 
 const messagesSlice = createSlice({
     name: "messages",
     initialState,
-    reducers: {
-        addMessageToLocalStore:{
-            reducer(state, action) {
-                state.messages[action.payload.chat].push(action.payload)
-            },
-            prepare(chatId, userId, text) {
-                return {
-                    payload: {
-                        id: nanoid(),
-                        text,
-                        chat: chatId,
-                        user: userId
-                    }
-                }
-            }
-        }
-    },
     extraReducers(builder) {
         builder
             // getAllMessages
@@ -79,8 +69,7 @@ const messagesSlice = createSlice({
             })
             .addCase(getAllMessages.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                const { chatId, messages } = action.payload;
-                state.messages[chatId] = messages;
+                messagesAdapter.setAll(state, action.payload);
             })
             .addCase(getAllMessages.rejected, (state, action) => {
                 state.status = "failed";
@@ -94,9 +83,7 @@ const messagesSlice = createSlice({
             })
             .addCase(addMessage.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                const message = action.payload;
-                if (!state.messages[message.chat]) state.messages[message.chat] = []
-                state.messages[message.chat].push(message);
+                messagesAdapter.addOne(state, action.payload);
             })
             .addCase(addMessage.rejected, (state, action) => {
                 state.status = "failed";
@@ -110,12 +97,10 @@ const messagesSlice = createSlice({
             })
             .addCase(updateMessage.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                const updatedMessage = action.payload;
-                let existingMessage = state.messages[updatedMessage.chat]?.find(
-                    message => message.id === updateMessage.id
-                );
+                const { id, text } = action.payload;
+                const existingMessage = state.entities[id];
                 if (existingMessage) {
-                    existingMessage = { ...updateMessage }
+                    existingMessage.text = text;
                 }
             })
             .addCase(updateMessage.rejected, (state, action) => {
@@ -130,8 +115,7 @@ const messagesSlice = createSlice({
             })
             .addCase(deleteMessage.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                const { chatId, messageId } = action.payload;
-                state.messages[chatId]?.filter(message => message !== messageId);
+                messagesAdapter.removeOne(action.payload);
             })
             .addCase(deleteMessage.rejected, (state, action) => {
                 state.status = "failed";
@@ -140,10 +124,18 @@ const messagesSlice = createSlice({
     }
 });
 
-export const { addMessageToLocalStore } = messagesSlice.actions;
+export const {
+    selectAll: selectMessages,
+    selectById: selectMessageById,
+    selectIds: selectMessageIds
+} = messagesAdapter.getSelectors(state => state.messages);
 
-export const selectMessages = (state, chatId) => 
-    state.messages.messages[chatId] ?? [];
 export const selectMessagesStatus = (state) => state.messages.status;
+
+// export const selectMessageIdsByChat = createSelector(
+//     [selectMessages, (state, chatId) => chatId],
+//     (messages, chatId) => messages.filter(message => message.chat === chatId)
+//                                     .map(message => message.id)
+// );
 
 export default messagesSlice.reducer;

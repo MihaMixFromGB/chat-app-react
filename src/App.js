@@ -1,6 +1,12 @@
 import { useSelector } from "react-redux";
 import {
+  /*
+    Static sites don't support routers that use the HTML5 pushState history API under the hood 
+    (for example, React Router using browserHistory).
+    You can switch to hashHistory for this effect.
+  */
   BrowserRouter as Router,
+  // HashRouter as Router,
   Routes,
   Route,
   Navigate
@@ -49,7 +55,7 @@ function App() {
               <RegisterPage isSignUp={true} />
             </PublicRoute>
           } />
-          <Route path="*" element={<Navigate replace to="/" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Route>
       </Routes>
     </Router>

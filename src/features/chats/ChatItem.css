@@ -12,3 +12,7 @@
 .chatItem > input[type="button"]:last-child {
     width: 20px;
 }
+
+.chatItem_selected {
+    font-weight: bold;
+}

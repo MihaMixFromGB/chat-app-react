@@ -1,31 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { MessagesList } from "./MessagesList";
-import {
-    selectMessages,
-    selectMessagesStatus,
-    getAllMessages,
-    addMessage
-} from "./messagesSlice";
+import { addMessage } from "./messagesSlice";
 import { selectAuthUserId } from "../users";
 
 import "./MessagesPage.css";
 
 export const MessagesPage = ({ chatId }) => {
-    const messages = useSelector(state => selectMessages(state, chatId));
-    const messagesStatus = useSelector(state => selectMessagesStatus(state));
     const authUserId = useSelector(state => selectAuthUserId(state));
-
+    
     const [newMessage, setNewMessage] = useState("");
 
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (messagesStatus === "idle") {
-            dispatch(getAllMessages(chatId));
-        }
-    }, [messagesStatus, chatId, dispatch]);
 
     const onChangeNewMessage = (event) => {
         setNewMessage(event.target.value);
@@ -50,7 +37,7 @@ export const MessagesPage = ({ chatId }) => {
 
     return (
         <div className="messages__container">
-            <MessagesList messages={messages} />
+            <MessagesList chatId={chatId} />
             <div className="messages_toolbar">
                 <input
                     type="text"
@@ -66,3 +53,4 @@ export const MessagesPage = ({ chatId }) => {
         </div>
     )
 };
+

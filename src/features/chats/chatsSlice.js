@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+    createSlice,
+    createAsyncThunk,
+    createEntityAdapter
+} from "@reduxjs/toolkit";
 import { nanoid } from "@reduxjs/toolkit";
 
 import {
@@ -11,7 +15,6 @@ export const getAllChats = createAsyncThunk(
     "chats/getAllChats",
     async () => {
         const chats = await getAllChatsFb();
-        chats.sort(sortMethod);
         return chats;
     }
 );
@@ -41,25 +44,18 @@ export const deleteChat = createAsyncThunk(
     }
 );
 
-const initialState = {
-    status: "idle",
-    error: "",
-    chats: []
-};
+const chatsAdapter = createEntityAdapter({
+    sortComparer: (a, b) => a.title.localeCompare(b.title)
+});
 
-const sortMethod = (a, b) => a.title.localeCompare(b.title);
+const initialState = chatsAdapter.getInitialState({
+    status: "idle",
+    error: ""
+});
 
 const chatsSlice = createSlice({
     name: 'chats',
     initialState,
-    reducers: {
-        addChatToLocalStore(state, action) {
-            state.chats.push({
-                id: nanoid(),
-                title: action.payload
-            })
-        }
-    },
     extraReducers(builder) {
         builder
             // getAllChats
@@ -69,7 +65,7 @@ const chatsSlice = createSlice({
             })
             .addCase(getAllChats.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                state.chats = action.payload.slice();
+                chatsAdapter.setAll(state, action.payload)
             })
             .addCase(getAllChats.rejected, (state, action) => {
                 state.status = "failed";
@@ -83,8 +79,7 @@ const chatsSlice = createSlice({
             })
             .addCase(addChat.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                state.chats.push(action.payload);
-                state.chats.sort(sortMethod);
+                chatsAdapter.addOne(state, action.payload);
             })
             .addCase(addChat.rejected, (state, action) => {
                 state.status = "failed";
@@ -97,10 +92,11 @@ const chatsSlice = createSlice({
                 state.error = "";
             })
             .addCase(updateChat.fulfilled, (state, action) => {
-                state.status = "succeede";
-                const existingChat = state.chats.find(chat => chat.id === action.payload.id);
+                state.status = "succeeded";
+                const { id, title } = action.payload;
+                const existingChat = state.entities[id];
                 if (existingChat) {
-                    existingChat.title = action.payload.title
+                    existingChat.title = title;
                 }
             })
             .addCase(updateChat.rejected, (state, action) => {
@@ -115,7 +111,7 @@ const chatsSlice = createSlice({
             })
             .addCase(deleteChat.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                state.chats = state.chats.filter(chat => chat.id !== action.payload)
+                chatsAdapter.removeOne(state, action.payload);
             })
             .addCase(deleteChat.rejected, (state, action) => {
                 state.status = "failed";
@@ -124,12 +120,12 @@ const chatsSlice = createSlice({
     }
 });
 
-export const { addChatToLocalStore } = chatsSlice.actions;
+export const {
+    selectAll: selectChats,
+    selectById: selectChatById,
+    selectIds: selectChatIds
+} = chatsAdapter.getSelectors(state => state.chats);
 
-export const selectAllChats = (state) => 
-    state.chats.chats;
-export const selectChatById = (state, chatId) => 
-    state.chats.chats.find(chat => chat.id === chatId);
 export const selectChatsStatus = (state) => state.chats.status;
 
 export default chatsSlice.reducer;

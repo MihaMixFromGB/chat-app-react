@@ -8,3 +8,8 @@
 .registerMenu__container a {
     text-decoration: none;
 }
+
+.registerMenu__signUp {
+    border: 1px solid #fff;
+    padding: 5px;
+}

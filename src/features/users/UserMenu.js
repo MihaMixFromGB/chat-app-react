@@ -24,7 +24,7 @@ export const UserMenu = () => {
                     <ul>
                         <li><Link className="text_regular" to={"chats"}>Chats</Link></li>
                         <li><Link className="text_regular" to={`users/${userId}`}>Profile</Link></li>
-                        <li className="text_regular" onClick={onSignOutClickBtn}>
+                        <li className="text_regular refElement" onClick={onSignOutClickBtn}>
                             Sign Out
                         </li>
                     </ul>
